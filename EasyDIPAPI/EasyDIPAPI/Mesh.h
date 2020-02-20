@@ -10,8 +10,11 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <cstddef>
+#include "shaders/Shader.h"
 
 using std::vector;
+
+extern Shader* bwShader;
 
 struct Vertex {
 	glm::vec3 Position;
@@ -30,6 +33,10 @@ public:
 	bool points;
 	bool back_face_culling;
 	bool zbuffer;
+	bool relleno;
+	glm::vec4 colorrelleno;
+	glm::vec4 colormesh;
+	glm::vec4 colorpoints;
 	void MeshCreate(vector<Vertex> vertices, vector<unsigned int> indices);
 	void Draw();
 	void Bind();

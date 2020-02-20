@@ -34,6 +34,7 @@ public:
 	void Render();
 	void ImGui();
 	void Init();
+	float NCP = 0.1f;
 	
 	static void HelpMarker(const char* desc);
 

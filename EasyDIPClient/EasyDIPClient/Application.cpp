@@ -54,6 +54,8 @@ quat qRot = quat(1.f, 0.f, 0.f, 0.f);
 mat4 modelMatrix;
 static float col2[4] = { 0.4f,0.7f,0.0f,0.5f };
 static float col1[4] = { 0.2f,0.3f,0.3f,1.0f};
+static float col4[4] = { 0.0f,0.0f,0.0f,0.0f };
+static float col3[4] = { 1.0f,1.0f,1.0f,1.0f };
 bool orthos;
 glm::mat4 proj;
 glm::mat4 orthogonal;
@@ -218,6 +220,18 @@ void Application::MainLoop()
 
 void Application::Render()
 {
+	if (!orthos)
+	{
+		//Perspective
+		proj = glm::mat4(1.0f);
+		proj = glm::ortho(-(float)windowWidth / 800.0f, (float)windowWidth / 800.0f, -(float)windowHeight / 800.0f, (float)windowHeight / 800.0f, NCP, 1000.0f);
+	}
+	else
+	{
+		//Orthogonal
+		proj = glm::mat4(1.0f);
+		proj = glm::perspective(glm::radians(45.0f), (float)windowWidth / (float)windowHeight, NCP, 1000.0f);
+	}
 	//std::cout << "is this happening outside?" << std::endl;
 	Mesh* mesh = Mesh::Instance();
 	if (bwShader) {
@@ -228,9 +242,13 @@ void Application::Render()
 		//bwShader->setFloat("test", test);
 		mesh->Bind();
 		mesh->Draw();
+		mesh->colormesh=glm::vec4(col3[0], col3[1], col3[2], col3[3]);
+		mesh->colorpoints=glm::vec4(col4[0], col4[1], col4[2], col4[3]);
 		//mesh->DrawNormals();
-		bwShader->setVec4("my_color", glm::vec4(col2[0], col2[1], col2[2], col2[3]));
+		mesh->colorrelleno = glm::vec4(col2[0], col2[1], col2[2], col2[3]);
+		//bwShader->setVec4("my_color", glm::vec4(col2[0], col2[1], col2[2], col2[3]));
 		bwShader->setMat4("mModelView", modelMatrix);
+		bwShader->setMat4("projection", proj);
 	}
 	//Quad *quad = Quad::Instance();
 	//if (bwShader) {
@@ -279,9 +297,17 @@ void Application::ImGui()
 	//	ImGui::NewLine();
 	//}
 
-	ImGui::Text("Color button with Picker:");
+	ImGui::Text("Color fill button with Picker:");
 	ImGui::SameLine(); HelpMarker("Click on the colored square to open a color picker.\nClick and hold to use drag and drop.\nRight-click on the colored square to show options.\nCTRL+click on individual component to input value.\n");
-	ImGui::ColorEdit4("color 2", col2);
+	ImGui::ColorEdit4("color 4", col2);
+
+	ImGui::Text("Color points button with Picker:");
+	ImGui::SameLine(); HelpMarker("Click on the colored square to open a color picker.\nClick and hold to use drag and drop.\nRight-click on the colored square to show options.\nCTRL+click on individual component to input value.\n");
+	ImGui::ColorEdit4("color 3", col4);
+
+	ImGui::Text("Color wire-frame with Picker:");
+	ImGui::SameLine(); HelpMarker("Click on the colored square to open a color picker.\nClick and hold to use drag and drop.\nRight-click on the colored square to show options.\nCTRL+click on individual component to input value.\n");
+	ImGui::ColorEdit4("color 2", col3);
 
 	ImGui::Text("Backgound color button with Picker:");
 	ImGui::SameLine(); HelpMarker("Click on the colored square to open a color picker.\nClick and hold to use drag and drop.\nRight-click on the colored square to show options.\nCTRL+click on individual component to input value.\n");
@@ -296,7 +322,7 @@ void Application::ImGui()
 	static float vec4fs[4] = { 0.5f, 0.5f, 0.5f, 0.5f };
 	static float vec4ft[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	ImGui::Text("X, Y, Z");
-	ImGui::SliderFloat3("SCALE", vec4fs, 0.0f, 1.0f);
+	ImGui::SliderFloat3("SCALE", vec4fs, 0.0f, 3.0f);
 	ImGui::Text("X, Y, Z");
 	ImGui::SliderFloat3("TRASLATE", vec4ft, -2.0f, 2.0f, "ratio = %.01f");
 	glm::vec3 auxs(vec4fs[0], vec4fs[1], vec4fs[2]);
@@ -304,6 +330,9 @@ void Application::ImGui()
 	modelMatrix = glm::translate(modelMatrix, auxt);
 	modelMatrix = glm::scale(modelMatrix, auxs);
 	
+	ImGui::PushItemWidth(100);
+	if (ImGui::DragFloat("Near Clipping Plane", &NCP, 0.01f));
+	ImGui::PopItemWidth();
 
 	if (texOGImg)
 	{
@@ -312,6 +341,7 @@ void Application::ImGui()
 	Mesh* mesh = Mesh::Instance();
 	ImGui::Checkbox("Mallado", &mesh->mallado);
 	ImGui::Checkbox("Puntos", &mesh->points);
+	ImGui::Checkbox("Relleno", &mesh->relleno);
 	ImGui::Checkbox("Back Face culling", &mesh->back_face_culling);
 	ImGui::Checkbox("Ortho", &orthos);
 	ImGui::Checkbox("Z-buffer", &mesh->zbuffer);

@@ -10,6 +10,7 @@ unsigned int Mesh::EBO = 0;
 
 void Mesh::MeshCreate(vector<Vertex> vertices, vector<unsigned int> indices) {
 
+
 	this->vertices = vertices;
 	this->indices = indices;
 	setupMesh();
@@ -61,8 +62,13 @@ void Mesh::Bind()
 
 void Mesh::Draw()
 {
-
-	glEnable(GL_DEPTH_TEST);
+	if (zbuffer) {
+		glEnable(GL_DEPTH_TEST);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+	else{
+		glDisable(GL_DEPTH_TEST);
+	}
 	if(back_face_culling)
 	{
 		glEnable(GL_CULL_FACE);
@@ -72,23 +78,31 @@ void Mesh::Draw()
 	{
 		glDisable(GL_CULL_FACE);
 	}
-	if (mallado)
+	if (points)
 	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	} 
-	else 
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
-	glBindVertexArray(VAO);
-	if (points) 
-	{
+		glPointSize(1.2f);
+		bwShader->setVec4("my_color", colorpoints);
 		glDrawElements(GL_POINTS, indices.size(), GL_UNSIGNED_INT, 0);
 	}
-	else
+	if (relleno)
 	{
+		glEnable(GL_POLYGON_OFFSET_FILL);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		bwShader->setVec4("my_color", colorrelleno);
+		glPolygonOffset(8.0f, 8.0f);
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+		glDisable(GL_POLYGON_OFFSET_FILL);
 	}
+	if (mallado)
+	{
+		glEnable(GL_POLYGON_OFFSET_LINE);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		bwShader->setVec4("my_color", colormesh);
+		glPolygonOffset(4.0f, 4.0f);
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+		glDisable(GL_POLYGON_OFFSET_LINE);
+	}
+	glBindVertexArray(VAO);
 		glBindVertexArray(0);
 }
 

@@ -152,7 +152,7 @@ namespace CG
 			myfile.close();
 		}
 		else std::cout << "Unable to open file";
-		std::cout << uncommented_file;
+		//std::cout << uncommented_file;
 		ss << uncommented_file;
 		std::size_t found_first = line.find('v');
 		while (!ss.eof())
@@ -237,7 +237,7 @@ namespace CG
 	}
 
 	void LoadOff(const std::string path) {
-		std::cout << "ich bin in off." << std::endl;
+		//std::cout << "ich bin in off." << std::endl;
 		vector <glm::vec3> all_vertex;
 		vector <glm::vec3> face_triangles;
 		vector <CG::triangle> all_triangles;
@@ -412,8 +412,8 @@ namespace CG
 			}
 			
 		}
-		std::cout << number_of_vertices << " " <<number_of_faces << " " << number_of_edges <<'\n';
-		std::cout << indices.size();
+		//std::cout << number_of_vertices << " " <<number_of_faces << " " << number_of_edges <<'\n';
+		//std::cout << indices.size();
 		maxVertex = glm::vec3(vertices[0].Position.x,vertices[0].Position.y,vertices[0].Position.z);
 		minVertex = glm::vec3(vertices[0].Position.x, vertices[0].Position.y, vertices[0].Position.z);
 		for (int i = 0; i < vertices.size();i++) 
@@ -470,7 +470,7 @@ namespace CG
 			edge1 = all_triangles[k].v1 - all_triangles[k].v0;
 			edge2 = all_triangles[k].v2 - all_triangles[k].v1;
 			all_triangles[k].normal = glm::normalize(glm::cross(edge1,edge2));
-			std::cout << glm::to_string(all_triangles[k].normal) << '\n';
+			//std::cout << glm::to_string(all_triangles[k].normal) << '\n';
 		}
 
 		for (int k = 0; k < vertices.size(); k++)
